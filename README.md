@@ -1,94 +1,105 @@
-# 10x Astro Starter
+# Reservo
 
-A modern, opinionated starter template for building fast, accessible, and AI-friendly web applications.
+A web-based application designed to streamline the process of reserving sports facilities, replacing traditional manual tracking systems with an automated, user-friendly platform.
+
+## Table of Contents
+
+- [Project Description](#project-description)
+- [Tech Stack](#tech-stack)
+- [Getting Started Locally](#getting-started-locally)
+- [Available Scripts](#available-scripts)
+- [Project Scope](#project-scope)
+- [Project Status](#project-status)
+- [License](#license)
+
+## Project Description
+
+Reservo solves the challenges of manual sports facility reservations. Facility managers face time-consuming tasks of recording bookings and handling conflicts, while users deal with inconvenient phone calls and no real-time visibility into availability.
+
+This application provides a centralized, automated system that supports two primary roles:
+-   **Users**: Can view facility availability, and make, edit, and cancel their own reservations.
+-   **Administrators**: Can oversee and manage all reservations across the platform.
 
 ## Tech Stack
 
-- [Astro](https://astro.build/) v5.5.5 - Modern web framework for building fast, content-focused websites
-- [React](https://react.dev/) v19.0.0 - UI library for building interactive components
-- [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
-- [Tailwind CSS](https://tailwindcss.com/) v4.0.17 - Utility-first CSS framework
+### Frontend
+-   **Astro 5**: Core framework for building fast, content-focused websites.
+-   **React 19**: Used for creating interactive UI components.
+-   **TypeScript 5**: For static type-checking and improved code quality.
+-   **Tailwind 4**: A utility-first CSS framework for styling.
+-   **Shadcn/ui**: A library of accessible and reusable React components.
 
-## Prerequisites
+### Backend
+-   **Supabase**: A comprehensive open-source backend solution providing:
+    -   PostgreSQL Database
+    -   Backend-as-a-Service (BaaS) SDK
+    -   User Authentication
 
-- Node.js v22.14.0 (as specified in `.nvmrc`)
-- npm (comes with Node.js)
+### CI/CD & Hosting
+-   **GitHub Actions**: For automating CI/CD pipelines.
+-   **DigitalOcean**: For application hosting.
 
-## Getting Started
+## Getting Started Locally
 
-1. Clone the repository:
+To get a local copy up and running, follow these simple steps.
 
-```bash
-git clone https://github.com/przeprogramowani/10x-astro-starter.git
-cd 10x-astro-starter
-```
+### Installation
 
-2. Install dependencies:
+1.  **Clone the repository:**
+    ```sh
+    git clone https://github.com/DariuszBrysz/Reservo.git
+    cd Reservo
+    ```
 
-```bash
-npm install
-```
+2.  **Install NPM packages:**
+    ```sh
+    npm install
+    ```
 
-3. Run the development server:
+3.  **Set up environment variables:**
+    Create a `.env` file in the root of the project and add your Supabase project credentials.
 
-```bash
-npm run dev
-```
+    ```env
+    SUPABASE_URL="your-supabase-url"
+    SUPABASE_KEY="your-supabase-key"
+    ```
 
-4. Build for production:
-
-```bash
-npm run build
-```
+4.  **Run the development server:**
+    ```sh
+    npm run dev
+    ```
+    The application will be available at `http://localhost:3000`.
 
 ## Available Scripts
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run lint:fix` - Fix ESLint issues
+In the project directory, you can run the following commands:
 
-## Project Structure
+| Script             | Description                                        |
+| ------------------ | -------------------------------------------------- |
+| `npm run dev`      | Runs the app in development mode.                  |
+| `npm run build`    | Builds the app for production.                     |
+| `npm run preview`  | Serves the production build locally for preview.   |
+| `npm run lint`     | Lints the codebase for potential errors.           |
+| `npm run lint:fix` | Lints the codebase and automatically fixes issues. |
+| `npm run format`   | Formats the code using Prettier.                   |
 
-```md
-.
-├── src/
-│   ├── layouts/    # Astro layouts
-│   ├── pages/      # Astro pages
-│   │   └── api/    # API endpoints
-│   ├── components/ # UI components (Astro & React)
-│   └── assets/     # Static assets
-├── public/         # Public assets
-```
+## Project Scope
 
-## AI Development Support
+### Facility Viewing:
+-   View a list of facilities and their schedule.
+### Reservation Management:
+-   Book a slot up to one week in advance.
+-   The system prevents double-bookings.
+-   Users can view, edit, and cancel their own upcoming reservations.
+-   Export reservations to an `.ics` file.
+### Administrator Capabilities:
+-   View all reservations for any facility and day.
+-   Cancel any user's reservation at any time, with an optional reason.
 
-This project is configured with AI development tools to enhance the development experience, providing guidelines for:
+## Project Status
 
-- Project structure
-- Coding practices
-- Frontend development
-- Styling with Tailwind
-- Accessibility best practices
-- Astro and React guidelines
-
-### Cursor IDE
-
-The project includes AI rules in `.cursor/rules/` directory that help Cursor IDE understand the project structure and provide better code suggestions.
-
-### GitHub Copilot
-
-AI instructions for GitHub Copilot are available in `.github/copilot-instructions.md`
-
-### Windsurf
-
-The `.windsurfrules` file contains AI configuration for Windsurf.
-
-## Contributing
-
-Please follow the AI guidelines and coding practices defined in the AI configuration files when contributing to this project.
+This project is currently in the **MVP development phase**.
 
 ## License
 
-MIT
+This project is licensed under the MIT License.
