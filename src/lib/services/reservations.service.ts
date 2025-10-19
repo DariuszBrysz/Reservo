@@ -654,6 +654,92 @@ export async function cancelUserReservation(
 }
 
 /**
+ * Retrieve a reservation for export (ICS file generation)
+ * Enforces authorization: user must own the reservation or be an admin
+ * @param supabase - Authenticated Supabase client
+ * @param reservationId - Reservation ID to retrieve
+ * @param userId - Current user ID (for authorization)
+ * @returns Reservation details with facility info
+ * @throws NotFoundError if reservation doesn't exist
+ * @throws ForbiddenError if user lacks permission to access the reservation
+ */
+export async function findReservationForExport(
+  supabase: SupabaseClient,
+  reservationId: number,
+  userId: string
+): Promise<ReservationDetailDTO> {
+  // Fetch reservation with facility join
+  const { data: reservationData, error: queryError } = await supabase
+    .from("reservations")
+    .select(
+      `
+      id,
+      start_time,
+      duration,
+      status,
+      cancellation_message,
+      created_at,
+      updated_at,
+      user_id,
+      facilities:facility_id (
+        id,
+        name
+      )
+    `
+    )
+    .eq("id", reservationId)
+    .single();
+
+  // Guard: Handle not found error
+  if (queryError) {
+    // Supabase returns PGRST116 for "not found" with .single()
+    if (queryError.code === "PGRST116") {
+      throw new NotFoundError("Reservation not found");
+    }
+    throw new Error("Failed to fetch reservation");
+  }
+
+  // Guard: Handle missing data
+  if (!reservationData) {
+    throw new NotFoundError("Reservation not found");
+  }
+
+  // Check if user has admin permission to view all reservations
+  const canViewAll = await hasPermission(supabase, "reservations.view_all");
+
+  // Guard: Check authorization - user must own the reservation or be an admin
+  if (!canViewAll && reservationData.user_id !== userId) {
+    throw new ForbiddenError("You do not have permission to export this reservation");
+  }
+
+  // Calculate end_time by adding duration to start_time
+  const endTime = calculateEndTime(reservationData.start_time, reservationData.duration as string);
+
+  // Type assertion for facilities - Supabase returns array for joins
+  const facilityData = Array.isArray(reservationData.facilities)
+    ? reservationData.facilities[0]
+    : reservationData.facilities;
+
+  // Map result to ReservationDetailDTO
+  const reservation: ReservationDetailDTO = {
+    id: reservationData.id,
+    facility: {
+      id: facilityData.id,
+      name: facilityData.name,
+    },
+    start_time: reservationData.start_time,
+    duration: reservationData.duration as string,
+    end_time: endTime,
+    status: reservationData.status,
+    cancellation_message: reservationData.cancellation_message,
+    created_at: reservationData.created_at,
+    updated_at: reservationData.updated_at,
+  };
+
+  return reservation;
+}
+
+/**
  * Update an existing reservation
  * @param supabase - Authenticated Supabase client
  * @param id - Reservation ID to update

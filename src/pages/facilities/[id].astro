@@ -1,0 +1,22 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import FacilityScheduleView from "../../components/views/FacilityScheduleView";
+
+// Extract the facility ID from the URL parameters
+const { id } = Astro.params;
+
+// Parse the ID as a number for type safety
+const facilityId = id ? parseInt(id, 10) : null;
+
+// Validate that we have a valid numeric ID
+if (!facilityId || isNaN(facilityId)) {
+  return Astro.redirect("/404");
+}
+
+// Disable prerendering for this dynamic route
+export const prerender = false;
+---
+
+<Layout title="Facility Schedule - Reservo">
+  <FacilityScheduleView client:load facilityId={facilityId} />
+</Layout>
