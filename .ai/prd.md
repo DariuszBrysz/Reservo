@@ -15,7 +15,7 @@ The manual tracking of sports facility reservations presents significant challen
 -   Users can view a list of available sports facilities.
 -   After selecting a facility, users can select a date from a 7-day view to see its schedule.
 -   The schedule displays available and reserved time slots for the selected day.
--   Facility operating hours are fixed from 2:00 p.m. to 10:00 p.m.
+-   Facility operating hours are fixed from 14:00 to 22:00
 -   Administrators can view the reservation schedule for any facility and day, which includes the reserving user's email address for each booking.
 
 ### 3.3. Reservation Management
@@ -26,7 +26,7 @@ The manual tracking of sports facility reservations presents significant challen
 -   The system prevents double-bookings; a time slot can only be reserved by one user.
 -   If a time slot becomes unavailable while a user is booking, a message will be displayed: “Sorry, this time slot is no longer available. Please select another time.”
 -   Users can view a list of their own upcoming reservations.
--   Users can edit the duration of their reservations up to 12 hours before the start time. The new duration cannot conflict with existing reservations or extend beyond the 10:00 p.m. closing time.
+-   Users can edit the duration of their reservations up to 12 hours before the start time. The new duration cannot conflict with existing reservations or extend beyond the 22:00 closing time.
 -   Users can cancel their own reservations.
 -   Users can export their reservations to an `.ics` file. The event title will be "Reservation: [Facility Name]".
 
@@ -73,7 +73,7 @@ The following features and functionalities are explicitly excluded from the MVP:
 -   Given I am logged in, I can see a list of available sports facilities.
 -   When I select a facility, I am presented with a view to select a date.
 -   The date selection shows the next 7 days.
--   When I select a date, a timeline or list is displayed showing all reservable hours (2 p.m. to 10 p.m.) with clear indicators for "available" and "booked" slots.
+-   When I select a date, a timeline or list is displayed showing all reservable hours (14 to 22) with clear indicators for "available" and "booked" slots.
 
 ### ID US-004
 ### Title: Make a Reservation
@@ -83,7 +83,7 @@ The following features and functionalities are explicitly excluded from the MVP:
 -   The start time dropdown only shows available 15-minute intervals.
 -   The duration dropdown allows selection in 15-minute increments, from a minimum of 30 minutes to a maximum of 3 hours.
 -   When I confirm my selection, the system creates the reservation.
--   The reservation must not end after the 10 p.m. closing time.
+-   The reservation must not end after the 22 closing time.
 -   After booking, the time slot is immediately shown as "booked" on the availability schedule.
 
 ### ID US-005
@@ -109,7 +109,7 @@ The following features and functionalities are explicitly excluded from the MVP:
 -   Given I am viewing my list of reservations, I can select an option to edit a reservation.
 -   Editing is only possible for reservations that are more than 12 hours in the future.
 -   I can only modify the duration of the reservation; the facility, date, and start time are not editable.
--   The system validates that the new duration does not conflict with any existing reservations or extend past 10 p.m.
+-   The system validates that the new duration does not conflict with any existing reservations or extend past 22
 -   Upon successful edit, the reservation details are updated in my reservation list and on the facility's schedule.
 
 ### ID US-008

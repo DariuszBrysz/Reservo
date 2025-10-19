@@ -484,8 +484,8 @@ END:VCALENDAR
 - **Increment**: 15 minutes
 
 #### Operating Hours
-- **Start time**: 14:00 (2:00 PM)
-- **End time**: 22:00 (10:00 PM)
+- **Start time**: 14:00
+- **End time**: 22:00
 
 #### Advance Booking Window
 - **Maximum**: 7 days in advance
