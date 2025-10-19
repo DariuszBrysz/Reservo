@@ -1,0 +1,17 @@
+---
+/**
+ * My Reservations Page
+ *
+ * Displays a tabbed interface showing the user's upcoming, past, and canceled reservations.
+ * Allows users to edit duration, cancel reservations (>12h before start), and export to .ics.
+ */
+
+import Layout from "../layouts/Layout.astro";
+import MyReservationsView from "../components/views/MyReservationsView";
+
+export const prerender = false;
+---
+
+<Layout title="My Reservations - Reservo">
+  <MyReservationsView client:load />
+</Layout>
