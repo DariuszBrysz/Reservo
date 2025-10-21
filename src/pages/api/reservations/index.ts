@@ -7,7 +7,7 @@ import {
   NotFoundError,
   ConflictError,
 } from "../../../lib/services/reservations.service";
-import { ZodError } from "astro/zod";
+import { ZodError } from "zod";
 
 export const prerender = false;
 

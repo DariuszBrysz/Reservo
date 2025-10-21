@@ -8,6 +8,11 @@ interface Props {
 }
 
 const { title = "Reservo" } = Astro.props;
+
+// Get user data from middleware
+const user = Astro.locals.user;
+const userEmail = user?.email || null;
+const userRole = user?.role || null;
 ---
 
 <!doctype html>
@@ -21,7 +26,7 @@ const { title = "Reservo" } = Astro.props;
   </head>
   <body>
     <div class="flex flex-col min-h-screen">
-      <Header currentPath={Astro.url.pathname} client:load />
+      <Header currentPath={Astro.url.pathname} userEmail={userEmail} userRole={userRole} client:load />
       <main class="flex-1">
         <slot />
       </main>
