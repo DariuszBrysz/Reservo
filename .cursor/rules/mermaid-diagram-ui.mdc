@@ -1,0 +1,107 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Mermaid Diagram - UI Components
+
+You are an experienced software architect tasked with creating a Mermaid diagram to visualise the architecture of Astro pages and React components for the login and registration module. The diagram should be created in the following file: DESTINATION
+
+You will need to refer to the following files to learn about the existing components:
+
+<file_references>
+[project-prd.md](mdc:.ai/project-prd.md)
+</file_references>
+
+<destination>
+.ai/diagrams/ui.md
+</destination>
+
+Your task is to analyse the specifications of the login and registration module and create a comprehensive Mermaid diagram that accurately represents the system architecture.
+
+Before creating the diagram, analyse the requirements and plan your approach. Place your analysis inside the <architecture_analysis> tags. In this analysis:
+
+1. List all components mentioned in the reference files.
+2. Identify the main pages and their corresponding components.
+3. Specify the data flow between components.
+4. Provide a brief description of each component's functionality.
+
+When you are ready to create the diagram, follow these guidelines:
+
+1. Start the diagram with the following syntax:
+
+   ```mermaid
+   flowchart TD
+   ```
+   
+2. Include the following elements in your diagram:
+
+   - Updated UI structure after implementing new requirements
+   - Layouts, server pages, and updates to existing components
+   - Grouping elements by functionality
+   - Direction of data flow between components
+   - Modules responsible for application state
+   - Division into shared components and page-specific components
+   - Dependencies between authentication-related components and the rest of the application
+   - Highlight components that needed to be updated due to new requirements
+
+3. Follow these Mermaid syntax rules:
+
+   - Use consistent node ID formatting:
+     ```
+     A[Main Panel] --> B[Login Form]
+     B --> C[Data Validation]
+     ```
+   - Remember that node IDs are case-sensitive and must be unique
+   - Use the correct node shapes:
+     - `[Text]` for rectangles
+     - `(Text)` for rounded rectangles
+     - `((Text))` for circles
+     - `{Text}` for diamonds
+     - `>Text]` for flags
+     - `[[Text]]` for subroutines
+     
+   - Group related elements using subgraphs:
+     ```
+     subgraph ‘Authentication Module’
+       A[Login Form]
+       B[Data Validation]
+       C[Session Management]
+     end
+     ```
+   - Use intermediate nodes for complex relationships instead of complicated connections
+   - Prefer vertical layout for hierarchies and horizontal layout for process flow
+   - Use correct connection types:
+     - `-->` for standard arrows
+     - `---` for lines without arrows
+     - `-.->` for dotted lines with arrows
+     - `==>` for thick lines with arrows
+     - `--Text-->` for arrows with labels
+   - Avoid using URLs, endpoint addresses, brackets, long function names, or complex expressions in node names
+   - Use consistent naming throughout the document
+   - Avoid long labels that may cause rendering issues
+   - Use quotation marks for text containing spaces:
+     ```
+     A[‘Authentication Component’] --> B[‘State Management’]
+     ```
+   - For node styling, use the correct syntax:
+     ```
+     A:::styleClass --> B
+     ```
+     with the class definition:
+     ```
+     classDef styleClass fill:#f96,stroke:#333,stroke-width:2px;
+     ```
+
+4. Avoid these common mistakes:
+   - Failure to declare the Mermaid section and diagram type at the beginning
+   - Incorrect node IDs (containing unauthorised characters)
+   - Unclosed subgraphs (missing ‘end’ for a started ‘subgraph’)
+   - Unclosed square brackets in node descriptions
+   - Inconsistent flow directions (mixing TD and LR without justification)
+   - Overly complex diagrams without proper grouping
+   - Overlapping labels and connections
+
+After creating your diagram, review it carefully to ensure there are no syntax errors or rendering issues. Make any necessary corrections to improve clarity and accuracy.
+
+When you are ready to present your final diagram, use <mermaid_diagram> tags to wrap it.

@@ -248,6 +248,7 @@ create or replace function public.custom_access_token_hook(event jsonb)
 returns jsonb
 language plpgsql
 stable
+security definer
 SET search_path = ''
 as $$
 declare
@@ -266,7 +267,7 @@ begin
     claims := jsonb_set(claims, '{user_role}', to_jsonb(user_role));
   else
     -- default to 'user' role if no role is assigned
-    claims := jsonb_set(claims, '{user_role}', to_jsonb('user'::app_role));
+    claims := jsonb_set(claims, '{user_role}', to_jsonb('user'::public.app_role));
   end if;
   
   -- update the 'claims' object in the original event
@@ -277,12 +278,6 @@ end;
 $$;
 
 comment on function public.custom_access_token_hook is 'Auth hook that adds user_role to JWT claims';
-
--- Grant necessary permissions for the auth hook
--- The supabase_auth_admin role needs to execute this function
-grant usage on schema public to supabase_auth_admin;
-grant execute on function public.custom_access_token_hook to supabase_auth_admin;
-revoke execute on function public.custom_access_token_hook from authenticated, anon, public;
 
 -- The auth hook needs to read from user_roles table
 grant all on table public.user_roles to supabase_auth_admin;
