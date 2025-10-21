@@ -144,7 +144,22 @@ The following features and functionalities are explicitly excluded from the MVP:
 -   Given I am viewing the reservation schedule as an administrator, each reservation has a "Cancel" button.
 -   When I click "Cancel," I am prompted to confirm and have an optional field to enter a reason for the cancellation.
 -   Upon confirmation, the reservation is canceled, and the time slot becomes available.
--   The canceled reservation's status is updated to "Canceled" in the original user's "My Reservations" view, along with the optional message.
+-   The canceled reservation's status is updated to "Canceled" in the original user's "My Reservations" view, along with the optional message..
+
+### US-012
+### Title: Secure access
+### Description: As a user, I want to be able to register and log in to the system in a way that ensures the security of my data.
+### Acceptance criteria:
+-   Login and registration take place on dedicated pages.
+-   Logging in requires an email address and password.
+-   Registration requires an email address, password, and password confirmation.
+-   The user CANNOT view the facility availability without logging into the system (US-003).
+-   The user CANNOT make a reservation without logging into the system (US-004).
+-   The user CANNOT view, edit, cancel or export his reservations without logging into the system (US-006, US-007, US-008, US-009, US-010 and US-011).
+-   The user can log into the system via the button in the upper right corner.
+-   The user can log out of the system using the button in the upper right corner of the main @Layout.astro.
+-   We do not use external login services (e.g., Google, GitHub).
+-   Password recovery should be possible.
 
 ## 6. Success Metrics
 The primary success criterion for the MVP is to validate its utility and effectiveness in managing facility bookings. This will be measured by the facility utilization rate.
