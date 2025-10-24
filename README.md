@@ -39,6 +39,11 @@ This application provides a centralized, automated system that supports two prim
 -   **GitHub Actions**: For automating CI/CD pipelines.
 -   **DigitalOcean**: For application hosting.
 
+### Testing
+-   **Vitest**: For unit and component testing.
+-   **React Testing Library**: For testing React components.
+-   **Playwright**: For End-to-End (E2E) testing.
+
 ## Getting Started Locally
 
 To get a local copy up and running, follow these simple steps.
@@ -74,14 +79,18 @@ To get a local copy up and running, follow these simple steps.
 
 In the project directory, you can run the following commands:
 
-| Script             | Description                                        |
-| ------------------ | -------------------------------------------------- |
-| `npm run dev`      | Runs the app in development mode.                  |
-| `npm run build`    | Builds the app for production.                     |
-| `npm run preview`  | Serves the production build locally for preview.   |
-| `npm run lint`     | Lints the codebase for potential errors.           |
-| `npm run lint:fix` | Lints the codebase and automatically fixes issues. |
-| `npm run format`   | Formats the code using Prettier.                   |
+| Script                 | Description                                        |
+| ---------------------- | -------------------------------------------------- |
+| `npm run dev`          | Runs the app in development mode.                  |
+| `npm run build`        | Builds the app for production.                     |
+| `npm run preview`      | Serves the production build locally for preview.   |
+| `npm run lint`         | Lints the codebase for potential errors.           |
+| `npm run lint:fix`     | Lints the codebase and automatically fixes issues. |
+| `npm run format`       | Formats the code using Prettier.                   |
+| `npm run test:unit`    | Runs unit tests using Vitest.                      |
+| `npm run test:unit:ui` | Runs unit tests with the Vitest UI.                |
+| `npm run test:e2e`     | Runs end-to-end tests using Playwright.            |
+| `npm run test:e2e:ui`  | Runs end-to-end tests with the Playwright UI.      |
 
 ## Project Scope
 
