@@ -58,16 +58,16 @@ function transformScheduleData(dto: FacilityScheduleDTO, selectedDate: Date): Fa
 
   // Create base date for the selected day at midnight
   const baseDate = new Date(selectedDate);
-  baseDate.setHours(0, 0, 0, 0);
+  baseDate.setUTCHours(0, 0, 0, 0);
 
   // Generate all time slots for the day
   for (let hour = startHour; hour < endHour; hour++) {
     for (let minute = 0; minute < 60; minute += slotDurationMinutes) {
       const slotStart = new Date(baseDate);
-      slotStart.setHours(hour, minute, 0, 0);
+      slotStart.setUTCHours(hour, minute, 0, 0);
 
       const slotEnd = new Date(slotStart);
-      slotEnd.setMinutes(slotEnd.getMinutes() + slotDurationMinutes);
+      slotEnd.setUTCMinutes(slotEnd.getUTCMinutes() + slotDurationMinutes);
 
       // Check if this slot is part of any reservation
       const reservation = dto.reservations.find((res) => {
@@ -98,9 +98,9 @@ function transformScheduleData(dto: FacilityScheduleDTO, selectedDate: Date): Fa
  * Formats a Date object to YYYY-MM-DD string
  */
 function formatDateToISO(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -111,7 +111,7 @@ export function useFacilitySchedule(facilityId: number): UseFacilityScheduleRetu
   // Core state
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
     return today;
   });
 

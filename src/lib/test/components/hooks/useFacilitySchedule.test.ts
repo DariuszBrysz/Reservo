@@ -23,15 +23,31 @@ vi.stubGlobal("fetch", mockFetch);
 
 describe("useFacilitySchedule", () => {
   const facilityId = 1;
+
+  // Helper functions to create dynamic dates based on current date
+  const getToday = () => {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    return today;
+  };
+
+  const getTodayISOString = () => getToday().toISOString().split("T")[0];
+
+  const getTodayAtTime = (hours: number, minutes = 0) => {
+    const date = getToday();
+    date.setUTCHours(hours, minutes, 0, 0);
+    return date.toISOString();
+  };
+
   const mockScheduleData: FacilityScheduleDTO = {
     facility: { id: 1, name: "Test Facility" },
-    date: "2024-10-23",
+    date: getTodayISOString(),
     reservations: [
       {
         id: 1,
-        start_time: "2024-10-23T14:00:00Z",
+        start_time: getTodayAtTime(14, 0),
         duration: "01:00:00",
-        end_time: "2024-10-23T15:00:00Z",
+        end_time: getTodayAtTime(15, 0),
         status: "confirmed",
         user: { email: "user@example.com" },
       },
@@ -56,7 +72,7 @@ describe("useFacilitySchedule", () => {
 
   const createTestReservationCommand = (overrides = {}) => ({
     facility_id: facilityId,
-    start_time: "2024-10-23T16:00:00Z",
+    start_time: getTodayAtTime(16, 0),
     duration: "01:00:00",
     ...overrides,
   });
@@ -75,7 +91,10 @@ describe("useFacilitySchedule", () => {
     vi.useFakeTimers({
       shouldAdvanceTime: true,
     });
-    vi.setSystemTime(new Date("2024-10-23T10:00:00Z"));
+    // Set system time to 10:00 AM today for consistent testing
+    const todayAt10AM = getToday();
+    todayAt10AM.setUTCHours(10, 0, 0, 0);
+    vi.setSystemTime(todayAt10AM);
   });
 
   afterEach(() => {
@@ -115,10 +134,7 @@ describe("useFacilitySchedule", () => {
 
       const { result } = renderHook(() => useFacilitySchedule(facilityId));
 
-      const today = new Date("2024-10-23T10:00:00Z");
-      today.setHours(0, 0, 0, 0);
-
-      expect(result.current.selectedDate).toEqual(today);
+      expect(result.current.selectedDate).toEqual(getToday());
     });
 
     it("should initialize with closed dialogs", () => {
@@ -161,7 +177,8 @@ describe("useFacilitySchedule", () => {
       renderHook(() => useFacilitySchedule(facilityId));
 
       await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith(`/api/facilities/${facilityId}/schedule?date=2024-10-23`);
+        const expectedDate = getTodayISOString();
+        expect(mockFetch).toHaveBeenCalledWith(`/api/facilities/${facilityId}/schedule?date=${expectedDate}`);
       });
     });
 
@@ -176,7 +193,7 @@ describe("useFacilitySchedule", () => {
         id: 1,
         name: "Test Facility",
       });
-      expect(result.current.schedule?.date).toBe("2024-10-23");
+      expect(result.current.schedule?.date).toBe(getTodayISOString());
       expect(result.current.schedule?.timeSlots).toBeDefined();
 
       // Type assertions for loaded schedule
@@ -204,9 +221,9 @@ describe("useFacilitySchedule", () => {
 
       // 8 hours * 4 slots per hour = 32 slots
       const timeSlots = result.current.schedule?.timeSlots || [];
-      expect(timeSlots[0].startTime.getHours()).toBe(14);
-      expect(timeSlots[31].startTime.getHours()).toBe(21);
-      expect(timeSlots[31].startTime.getMinutes()).toBe(45);
+      expect(timeSlots[0].startTime.getUTCHours()).toBe(14);
+      expect(timeSlots[31].startTime.getUTCHours()).toBe(21);
+      expect(timeSlots[31].startTime.getUTCMinutes()).toBe(45);
     });
 
     it("should mark slots as booked when they overlap with reservations", async () => {
@@ -304,7 +321,7 @@ describe("useFacilitySchedule", () => {
           ok: true,
           json: async () => ({
             ...mockScheduleData,
-            date: "2024-10-24",
+            date: new Date(getToday().getTime() + 24 * 60 * 60 * 1000).toISOString().split("T")[0], // Tomorrow
           }),
         });
 
@@ -314,16 +331,19 @@ describe("useFacilitySchedule", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // Change date
-      const newDate = new Date("2024-10-24");
-      newDate.setHours(0, 0, 0, 0);
+      // Change date to tomorrow
+      const tomorrow = new Date(getToday().getTime() + 24 * 60 * 60 * 1000);
+      tomorrow.setUTCHours(0, 0, 0, 0);
 
       act(() => {
-        result.current.setSelectedDate(newDate);
+        result.current.setSelectedDate(tomorrow);
       });
 
       await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith(`/api/facilities/${facilityId}/schedule?date=2024-10-24`);
+        const tomorrow = new Date(getToday().getTime() + 24 * 60 * 60 * 1000);
+        expect(mockFetch).toHaveBeenCalledWith(
+          `/api/facilities/${facilityId}/schedule?date=${tomorrow.toISOString().split("T")[0]}`
+        );
       });
     });
 
@@ -339,8 +359,8 @@ describe("useFacilitySchedule", () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      const newDate = new Date("2024-10-25");
-      newDate.setHours(0, 0, 0, 0);
+      const newDate = new Date(getToday().getTime() + 2 * 24 * 60 * 60 * 1000); // Day after tomorrow
+      newDate.setUTCHours(0, 0, 0, 0);
 
       act(() => {
         result.current.setSelectedDate(newDate);
@@ -358,7 +378,7 @@ describe("useFacilitySchedule", () => {
 
       await waitForScheduleLoad(result);
 
-      const startTime = new Date("2024-10-23T15:00:00Z");
+      const startTime = new Date(getTodayAtTime(15, 0));
 
       act(() => {
         result.current.openBookingDialog(startTime);
@@ -505,13 +525,12 @@ describe("useFacilitySchedule", () => {
           },
         })
       );
-      expect(JSON.parse(mockFetch.mock.calls[1][1].body as string)).toMatchInlineSnapshot(`
-        {
-          "duration": "01:00:00",
-          "facility_id": 1,
-          "start_time": "2024-10-23T16:00:00Z",
-        }
-      `);
+      const requestBody = JSON.parse(mockFetch.mock.calls[1][1].body as string);
+      expect(requestBody).toEqual({
+        duration: "01:00:00",
+        facility_id: 1,
+        start_time: getTodayAtTime(16, 0),
+      });
     });
 
     it("should close dialog after successful creation", async () => {
@@ -542,7 +561,7 @@ describe("useFacilitySchedule", () => {
 
       const command = {
         facility_id: facilityId,
-        start_time: "2024-10-23T16:00:00Z",
+        start_time: getTodayAtTime(16, 0),
         duration: "01:00:00",
       };
 
@@ -576,7 +595,7 @@ describe("useFacilitySchedule", () => {
 
       const command = {
         facility_id: facilityId,
-        start_time: "2024-10-23T16:00:00Z",
+        start_time: getTodayAtTime(16, 0),
         duration: "01:00:00",
       };
 
@@ -607,7 +626,7 @@ describe("useFacilitySchedule", () => {
 
       const command = {
         facility_id: facilityId,
-        start_time: "2024-10-23T16:00:00Z",
+        start_time: getTodayAtTime(16, 0),
         duration: "01:00:00",
       };
 
@@ -637,7 +656,7 @@ describe("useFacilitySchedule", () => {
 
       const command = {
         facility_id: facilityId,
-        start_time: "2024-10-23T16:00:00Z",
+        start_time: getTodayAtTime(16, 0),
         duration: "01:00:00",
       };
 

@@ -54,7 +54,7 @@ function formatDurationLabel(minutes: number): string {
 function calculateAvailableDurations(startTime: Date, timeSlots: TimeSlotViewModel[]): number[] {
   const durations: number[] = [];
   const closingTime = new Date(startTime);
-  closingTime.setHours(22, 0, 0, 0);
+  closingTime.setUTCHours(22, 0, 0, 0);
 
   // Find the next booked slot after the start time
   const nextBookedSlot = timeSlots.find((slot) => slot.status === "booked" && slot.startTime > startTime);
