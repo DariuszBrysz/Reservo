@@ -401,7 +401,7 @@ export const createReservationSchema = z
       const startTime = new Date(data.start_time);
 
       const startLimitTime = new Date(startTime);
-      startLimitTime.setHours(22, 0, 0, 0);
+      startLimitTime.setHours(14, 0, 0, 0);
       const endLimitTime = new Date(startTime);
       endLimitTime.setHours(22, 0, 0, 0);
 

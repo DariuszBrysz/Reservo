@@ -55,8 +55,13 @@ export default function DateSelector({ selectedDate, onDateSelect }: DateSelecto
   const days = getNext7Days();
 
   return (
-    <div className="flex flex-wrap gap-2" role="group" aria-label="Select date to view schedule">
-      {days.map((date) => {
+    <div
+      className="flex flex-wrap gap-2"
+      role="group"
+      aria-label="Select date to view schedule"
+      data-testid="date-selector"
+    >
+      {days.map((date, index) => {
         const isSelected = isSameDay(date, selectedDate);
         const label = formatDateLabel(date);
         const fullDate = date.toLocaleDateString("en-GB", {
@@ -74,6 +79,7 @@ export default function DateSelector({ selectedDate, onDateSelect }: DateSelecto
             aria-pressed={isSelected}
             aria-label={`View schedule for ${fullDate}`}
             className="min-w-[80px]"
+            data-testid={`date-button-${index}`}
           >
             {label}
           </Button>

@@ -84,12 +84,12 @@ export function LoginForm() {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
+    <Card className="w-full max-w-md mx-auto" data-testid="login-form-card">
       <CardHeader>
         <CardTitle>Sign In</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" data-testid="login-form">
           {/* Email Field */}
           <Field>
             <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -104,6 +104,7 @@ export function LoginForm() {
                 aria-describedby={errors.email ? "email-error" : undefined}
                 placeholder="you@example.com"
                 autoComplete="email"
+                data-testid="login-email-input"
               />
               {errors.email && <FieldError id="email-error">{errors.email}</FieldError>}
             </FieldContent>
@@ -122,6 +123,7 @@ export function LoginForm() {
                 aria-invalid={!!errors.password}
                 aria-describedby={errors.password ? "password-error" : undefined}
                 autoComplete="current-password"
+                data-testid="login-password-input"
               />
               {errors.password && <FieldError id="password-error">{errors.password}</FieldError>}
             </FieldContent>
@@ -132,13 +134,14 @@ export function LoginForm() {
             <div
               role="alert"
               className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md p-3"
+              data-testid="login-error-message"
             >
               {errors.general}
             </div>
           )}
 
           {/* Submit Button */}
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" className="w-full" disabled={isSubmitting} data-testid="login-submit-button">
             {isSubmitting ? "Signing in..." : "Sign In"}
           </Button>
 

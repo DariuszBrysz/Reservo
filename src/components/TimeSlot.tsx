@@ -15,6 +15,7 @@ interface TimeSlotProps {
   userRole: AppRole;
   onSelect: () => void;
   onCancel: (reservationId: number) => void;
+  index?: number;
 }
 
 /**
@@ -26,7 +27,7 @@ function formatTime(date: Date): string {
   return `${hours}:${minutes}`;
 }
 
-export default function TimeSlot({ timeSlot, userRole, onSelect, onCancel }: TimeSlotProps) {
+export default function TimeSlot({ timeSlot, userRole, onSelect, onCancel, index }: TimeSlotProps) {
   const { startTime, endTime, status, reservation } = timeSlot;
   const isAvailable = status === "available";
   const isBooked = status === "booked";
@@ -42,6 +43,7 @@ export default function TimeSlot({ timeSlot, userRole, onSelect, onCancel }: Tim
         onClick={onSelect}
         className="w-full p-3 text-left border-2 border-dashed border-muted-foreground/30 rounded-lg hover:border-primary hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         aria-label={`Book time slot from ${startTimeStr} to ${endTimeStr}`}
+        data-testid={`time-slot-available-${index !== undefined ? index : startTimeStr}`}
       >
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-muted-foreground">
@@ -62,6 +64,7 @@ export default function TimeSlot({ timeSlot, userRole, onSelect, onCancel }: Tim
       <div
         className="w-full p-3 border-2 border-primary bg-primary/10 rounded-lg"
         aria-label={`Booked time slot from ${resStartTime} to ${resEndTime}`}
+        data-testid={`time-slot-booked-${index !== undefined ? index : resStartTime}`}
       >
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
