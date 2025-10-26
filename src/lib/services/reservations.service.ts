@@ -161,9 +161,9 @@ function calculateEndTime(startTime: string, duration: string): string {
 
   // Add duration to start time
   const end = new Date(start);
-  end.setHours(end.getHours() + hours);
-  end.setMinutes(end.getMinutes() + minutes);
-  end.setSeconds(end.getSeconds() + seconds);
+  end.setUTCHours(end.getUTCHours() + hours);
+  end.setUTCMinutes(end.getUTCMinutes() + minutes);
+  end.setUTCSeconds(end.getUTCSeconds() + seconds);
 
   return end.toISOString();
 }
@@ -401,9 +401,9 @@ export const createReservationSchema = z
       const startTime = new Date(data.start_time);
 
       const startLimitTime = new Date(startTime);
-      startLimitTime.setHours(22, 0, 0, 0);
+      startLimitTime.setUTCHours(14, 0, 0, 0);
       const endLimitTime = new Date(startTime);
-      endLimitTime.setHours(22, 0, 0, 0);
+      endLimitTime.setUTCHours(22, 0, 0, 0);
 
       return startTime >= startLimitTime && startTime <= endLimitTime;
     },
@@ -455,12 +455,12 @@ export const createReservationSchema = z
       const [hours, minutes, seconds] = data.duration.split(":").map(Number);
 
       const endTime = new Date(startTime);
-      endTime.setHours(endTime.getHours() + hours);
-      endTime.setMinutes(endTime.getMinutes() + minutes);
-      endTime.setSeconds(endTime.getSeconds() + seconds);
+      endTime.setUTCHours(endTime.getUTCHours() + hours);
+      endTime.setUTCMinutes(endTime.getUTCMinutes() + minutes);
+      endTime.setUTCSeconds(endTime.getUTCSeconds() + seconds);
 
       const limitTime = new Date(startTime);
-      limitTime.setHours(22, 0, 0, 0);
+      limitTime.setUTCHours(22, 0, 0, 0);
 
       return endTime <= limitTime;
     },
@@ -878,7 +878,7 @@ export async function updateReservation(
       const newEndTime = calculateEndTime(existingReservation.start_time, newDuration);
       const endTimeDate = new Date(newEndTime);
       const limitTime = new Date(endTimeDate);
-      limitTime.setHours(22, 0, 0, 0);
+      limitTime.setUTCHours(22, 0, 0, 0);
 
       if (endTimeDate > limitTime) {
         return {

@@ -17,29 +17,54 @@ import ScheduleView from "../../../components/ScheduleView";
 import type { TimeSlotViewModel } from "../../../components/views/viewModels";
 
 describe("ScheduleView", () => {
+  // Helper functions to create dynamic dates based on current date
+  const getToday = () => {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    return today;
+  };
+
+  const getTodayAtTime = (hours: number, minutes = 0) => {
+    const date = getToday();
+    date.setUTCHours(hours, minutes, 0, 0);
+    return date;
+  };
+
+  const getTodayAtTimeISOString = (hours: number, minutes = 0) => getTodayAtTime(hours, minutes).toISOString();
+
   const mockTimeSlots: TimeSlotViewModel[] = [
     {
-      startTime: new Date("2024-10-23T14:00:00Z"),
-      endTime: new Date("2024-10-23T14:15:00Z"),
+      startTime: getTodayAtTime(14, 0),
+      endTime: getTodayAtTime(14, 15),
       status: "available",
     },
     {
-      startTime: new Date("2024-10-23T14:15:00Z"),
-      endTime: new Date("2024-10-23T14:30:00Z"),
+      startTime: getTodayAtTime(14, 15),
+      endTime: getTodayAtTime(14, 30),
       status: "available",
     },
     {
-      startTime: new Date("2024-10-23T14:30:00Z"),
-      endTime: new Date("2024-10-23T14:45:00Z"),
+      startTime: getTodayAtTime(14, 30),
+      endTime: getTodayAtTime(14, 45),
       status: "booked",
       reservation: {
         id: 1,
-        start_time: "2024-10-23T14:30:00Z",
-        end_time: "2024-10-23T15:30:00Z",
+        start_time: getTodayAtTimeISOString(14, 30),
+        end_time: getTodayAtTimeISOString(15, 30),
         duration: "01:00:00",
         status: "confirmed",
         user: { email: "user@example.com" },
       },
+    },
+    {
+      startTime: getTodayAtTime(16, 0),
+      endTime: getTodayAtTime(16, 15),
+      status: "available",
+    },
+    {
+      startTime: getTodayAtTime(16, 15),
+      endTime: getTodayAtTime(16, 30),
+      status: "available",
     },
   ];
 
@@ -61,7 +86,7 @@ describe("ScheduleView", () => {
       expect(list).toBeInTheDocument();
 
       const listItems = screen.getAllByRole("listitem");
-      expect(listItems).toHaveLength(3);
+      expect(listItems).toHaveLength(5);
     });
 
     it("should render time slots in order", () => {
@@ -126,7 +151,7 @@ describe("ScheduleView", () => {
       );
 
       const availableSlots = screen.getAllByRole("button", { name: /book time slot/i });
-      expect(availableSlots).toHaveLength(2); // Two available slots
+      expect(availableSlots).toHaveLength(4); // Four available slots
     });
 
     it("should render booked time slots with reservation details", () => {
@@ -217,7 +242,7 @@ describe("ScheduleView", () => {
       await user.click(firstAvailableSlot);
 
       expect(onTimeSlotSelect).toHaveBeenCalledTimes(1);
-      expect(onTimeSlotSelect).toHaveBeenCalledWith(mockTimeSlots[0].startTime);
+      expect(onTimeSlotSelect).toHaveBeenCalledWith(getTodayAtTime(16, 0));
     });
 
     it("should call onCancelReservation when admin cancels a booking", async () => {
@@ -257,11 +282,11 @@ describe("ScheduleView", () => {
 
       const firstSlot = screen.getByLabelText(/16:00.*16:15/);
       await user.click(firstSlot);
-      expect(onTimeSlotSelect).toHaveBeenLastCalledWith(mockTimeSlots[0].startTime);
+      expect(onTimeSlotSelect).toHaveBeenLastCalledWith(getTodayAtTime(16, 0));
 
       const secondSlot = screen.getByLabelText(/16:15.*16:30/);
       await user.click(secondSlot);
-      expect(onTimeSlotSelect).toHaveBeenLastCalledWith(mockTimeSlots[1].startTime);
+      expect(onTimeSlotSelect).toHaveBeenLastCalledWith(getTodayAtTime(16, 15));
     });
 
     it("should allow multiple interactions", async () => {
@@ -413,13 +438,13 @@ describe("ScheduleView", () => {
     it("should handle all available slots", () => {
       const allAvailableSlots: TimeSlotViewModel[] = [
         {
-          startTime: new Date("2024-10-23T14:00:00Z"),
-          endTime: new Date("2024-10-23T14:15:00Z"),
+          startTime: getTodayAtTime(14, 0),
+          endTime: getTodayAtTime(14, 15),
           status: "available",
         },
         {
-          startTime: new Date("2024-10-23T14:15:00Z"),
-          endTime: new Date("2024-10-23T14:30:00Z"),
+          startTime: getTodayAtTime(14, 15),
+          endTime: getTodayAtTime(14, 30),
           status: "available",
         },
       ];
@@ -443,25 +468,25 @@ describe("ScheduleView", () => {
     it("should handle all booked slots", () => {
       const allBookedSlots: TimeSlotViewModel[] = [
         {
-          startTime: new Date("2024-10-23T14:00:00Z"),
-          endTime: new Date("2024-10-23T14:15:00Z"),
+          startTime: getTodayAtTime(14, 0),
+          endTime: getTodayAtTime(14, 15),
           status: "booked",
           reservation: {
             id: 1,
-            start_time: "2024-10-23T14:00:00Z",
-            end_time: "2024-10-23T15:00:00Z",
+            start_time: getTodayAtTimeISOString(14, 0),
+            end_time: getTodayAtTimeISOString(15, 0),
             duration: "01:00:00",
             status: "confirmed",
           },
         },
         {
-          startTime: new Date("2024-10-23T14:15:00Z"),
-          endTime: new Date("2024-10-23T14:30:00Z"),
+          startTime: getTodayAtTime(14, 15),
+          endTime: getTodayAtTime(14, 30),
           status: "booked",
           reservation: {
             id: 2,
-            start_time: "2024-10-23T14:15:00Z",
-            end_time: "2024-10-23T15:15:00Z",
+            start_time: getTodayAtTimeISOString(14, 15),
+            end_time: getTodayAtTimeISOString(15, 15),
             duration: "01:00:00",
             status: "confirmed",
           },
@@ -486,8 +511,8 @@ describe("ScheduleView", () => {
     it("should handle single time slot", () => {
       const singleSlot: TimeSlotViewModel[] = [
         {
-          startTime: new Date("2024-10-23T14:00:00Z"),
-          endTime: new Date("2024-10-23T14:15:00Z"),
+          startTime: getTodayAtTime(14, 0),
+          endTime: getTodayAtTime(14, 15),
           status: "available",
         },
       ];
@@ -522,12 +547,14 @@ describe("ScheduleView", () => {
         const endHour = startHour + Math.floor(endMinute / 60);
         const finalEndMinute = endMinute % 60;
 
+        const todayDateString = getToday().toISOString().split("T")[0];
+
         return {
           startTime: new Date(
-            `2024-10-23T${startHour.toString().padStart(2, "0")}:${startMinute.toString().padStart(2, "0")}:00Z`
+            `${todayDateString}T${startHour.toString().padStart(2, "0")}:${startMinute.toString().padStart(2, "0")}:00Z`
           ),
           endTime: new Date(
-            `2024-10-23T${endHour.toString().padStart(2, "0")}:${finalEndMinute.toString().padStart(2, "0")}:00Z`
+            `${todayDateString}T${endHour.toString().padStart(2, "0")}:${finalEndMinute.toString().padStart(2, "0")}:00Z`
           ),
           status: "available" as const,
         };

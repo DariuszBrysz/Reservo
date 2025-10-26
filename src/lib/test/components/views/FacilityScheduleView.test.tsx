@@ -41,20 +41,37 @@ describe("FacilityScheduleView", () => {
   const facilityId = 1;
   const mockUseFacilitySchedule = vi.mocked(useFacilityScheduleModule.useFacilitySchedule);
 
+  // Helper functions to create dynamic dates based on current date
+  const getToday = () => {
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+    return today;
+  };
+
+  const getTodayISOString = () => getToday().toISOString().split("T")[0];
+
+  const getTodayAtTime = (hours: number, minutes = 0) => {
+    const date = getToday();
+    date.setUTCHours(hours, minutes, 0, 0);
+    return date;
+  };
+
+  const getTodayAtTimeISOString = (hours: number, minutes = 0) => getTodayAtTime(hours, minutes).toISOString();
+
   const mockTimeSlots: TimeSlotViewModel[] = [
     {
-      startTime: new Date("2024-10-23T14:00:00Z"),
-      endTime: new Date("2024-10-23T14:15:00Z"),
+      startTime: getTodayAtTime(14, 0),
+      endTime: getTodayAtTime(14, 15),
       status: "available",
     },
     {
-      startTime: new Date("2024-10-23T14:15:00Z"),
-      endTime: new Date("2024-10-23T14:30:00Z"),
+      startTime: getTodayAtTime(14, 15),
+      endTime: getTodayAtTime(14, 30),
       status: "booked",
       reservation: {
         id: 1,
-        start_time: "2024-10-23T14:15:00Z",
-        end_time: "2024-10-23T15:15:00Z",
+        start_time: getTodayAtTimeISOString(14, 15),
+        end_time: getTodayAtTimeISOString(15, 15),
         duration: "01:00:00",
         status: "confirmed",
         user: { email: "user@example.com" },
@@ -64,7 +81,7 @@ describe("FacilityScheduleView", () => {
 
   const mockSchedule: FacilityScheduleViewModel = {
     facility: { id: 1, name: "Basketball Court" },
-    date: "2024-10-23",
+    date: getTodayISOString(),
     timeSlots: mockTimeSlots,
   };
 
@@ -73,7 +90,7 @@ describe("FacilityScheduleView", () => {
     isLoading: false,
     error: null,
     userRole: "user" as AppRole,
-    selectedDate: new Date("2024-10-23T00:00:00Z"),
+    selectedDate: getToday(),
     setSelectedDate: vi.fn(),
     bookingState: { isOpen: false, startTime: null },
     openBookingDialog: vi.fn(),
@@ -220,7 +237,7 @@ describe("FacilityScheduleView", () => {
       render(<FacilityScheduleView facilityId={facilityId} />);
 
       // Available slot
-      expect(screen.getByLabelText(/book time slot from 16:00/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/book time slot from 14:00/i)).toBeInTheDocument();
 
       // Booked slot
       expect(screen.getByLabelText(/booked time slot/i)).toBeInTheDocument();
@@ -251,7 +268,7 @@ describe("FacilityScheduleView", () => {
 
   describe("Date Selection", () => {
     it("should pass selected date to DateSelector", () => {
-      const selectedDate = new Date("2025-10-25T00:00:00Z"); // Use current year
+      const selectedDate = getToday();
       mockUseFacilitySchedule.mockReturnValue({
         ...defaultHookReturn,
         selectedDate,
@@ -259,9 +276,9 @@ describe("FacilityScheduleView", () => {
 
       render(<FacilityScheduleView facilityId={facilityId} />);
 
-      // DateSelector should highlight Oct 25 (which is a Saturday)
-      const button = screen.getByRole("button", { name: /saturday.*25.*october/i });
-      expect(button).toHaveAttribute("aria-pressed", "true");
+      // DateSelector should highlight the selected date (first button)
+      const buttons = screen.getAllByRole("button");
+      expect(buttons[0]).toHaveAttribute("aria-pressed", "true");
     });
 
     it("should call setSelectedDate when date is changed", async () => {
@@ -301,7 +318,7 @@ describe("FacilityScheduleView", () => {
         ...defaultHookReturn,
         bookingState: {
           isOpen: true,
-          startTime: new Date("2024-10-23T14:00:00Z"),
+          startTime: getTodayAtTime(14, 0),
         },
       });
 
@@ -321,7 +338,7 @@ describe("FacilityScheduleView", () => {
 
       render(<FacilityScheduleView facilityId={facilityId} />);
 
-      const availableSlot = screen.getByLabelText(/book time slot from 16:00/i);
+      const availableSlot = screen.getByLabelText(/book time slot from 14:00/i);
       await user.click(availableSlot);
 
       expect(openBookingDialog).toHaveBeenCalledTimes(1);
@@ -329,7 +346,7 @@ describe("FacilityScheduleView", () => {
     });
 
     it("should pass correct props to BookingDialog", () => {
-      const startTime = new Date("2024-10-23T14:00:00Z");
+      const startTime = getTodayAtTime(14, 0);
       mockUseFacilitySchedule.mockReturnValue({
         ...defaultHookReturn,
         bookingState: { isOpen: true, startTime },
@@ -387,7 +404,7 @@ describe("FacilityScheduleView", () => {
 
       const command = {
         facility_id: facilityId,
-        start_time: "2024-10-23T14:00:00Z",
+        start_time: getTodayAtTimeISOString(14, 0),
         duration: "01:00:00",
       };
 

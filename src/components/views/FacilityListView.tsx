@@ -95,11 +95,11 @@ export function FacilityListView() {
 
   // Success state - render facility cards
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <div className="container mx-auto px-4 py-8 max-w-5xl" data-testid="facility-list-view">
       <h1 className="text-4xl font-bold tracking-tight mb-2">Available Facilities</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data.map((facility) => (
-          <FacilityCard key={facility.id} facility={facility} />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="facility-grid">
+        {data.map((facility, index) => (
+          <FacilityCard key={facility.id} facility={facility} index={index} />
         ))}
       </div>
     </div>

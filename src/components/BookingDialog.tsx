@@ -54,7 +54,7 @@ function formatDurationLabel(minutes: number): string {
 function calculateAvailableDurations(startTime: Date, timeSlots: TimeSlotViewModel[]): number[] {
   const durations: number[] = [];
   const closingTime = new Date(startTime);
-  closingTime.setHours(22, 0, 0, 0);
+  closingTime.setUTCHours(22, 0, 0, 0);
 
   // Find the next booked slot after the start time
   const nextBookedSlot = timeSlots.find((slot) => slot.status === "booked" && slot.startTime > startTime);
@@ -151,7 +151,7 @@ export default function BookingDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && !isSubmitting && onCancel()}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" data-testid="booking-dialog">
         <DialogHeader>
           <DialogTitle>Create Reservation</DialogTitle>
           <DialogDescription>Select the duration for your reservation starting at {startTimeStr}.</DialogDescription>
@@ -161,15 +161,19 @@ export default function BookingDialog({
           <div className="space-y-2">
             <Label htmlFor="duration">Duration</Label>
             <Select value={selectedDuration} onValueChange={setSelectedDuration} disabled={isSubmitting}>
-              <SelectTrigger id="duration" aria-label="Select reservation duration">
+              <SelectTrigger
+                id="duration"
+                aria-label="Select reservation duration"
+                data-testid="duration-select-trigger"
+              >
                 <SelectValue placeholder="Select duration" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent data-testid="duration-select-content">
                 {availableDurations.length === 0 ? (
                   <div className="p-2 text-sm text-muted-foreground">No available durations</div>
                 ) : (
-                  availableDurations.map((duration) => (
-                    <SelectItem key={duration} value={duration.toString()}>
+                  availableDurations.map((duration, index) => (
+                    <SelectItem key={duration} value={duration.toString()} data-testid={`duration-option-${index}`}>
                       {formatDurationLabel(duration)}
                     </SelectItem>
                   ))
@@ -190,17 +194,21 @@ export default function BookingDialog({
           </div>
 
           {error && (
-            <div className="text-sm text-destructive" role="alert">
+            <div className="text-sm text-destructive" role="alert" data-testid="booking-error-message">
               {error}
             </div>
           )}
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
+          <Button variant="outline" onClick={onCancel} disabled={isSubmitting} data-testid="booking-cancel-button">
             Cancel
           </Button>
-          <Button onClick={handleConfirm} disabled={!selectedDuration || isSubmitting}>
+          <Button
+            onClick={handleConfirm}
+            disabled={!selectedDuration || isSubmitting}
+            data-testid="booking-confirm-button"
+          >
             {isSubmitting ? "Creating..." : "Confirm Reservation"}
           </Button>
         </DialogFooter>

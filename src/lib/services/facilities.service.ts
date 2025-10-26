@@ -150,9 +150,9 @@ function calculateEndTime(startTime: string, duration: string): string {
 
   // Add duration to start time
   const end = new Date(start);
-  end.setHours(end.getHours() + hours);
-  end.setMinutes(end.getMinutes() + minutes);
-  end.setSeconds(end.getSeconds() + seconds);
+  end.setUTCHours(end.getUTCHours() + hours);
+  end.setUTCMinutes(end.getUTCMinutes() + minutes);
+  end.setUTCSeconds(end.getUTCSeconds() + seconds);
 
   return end.toISOString();
 }

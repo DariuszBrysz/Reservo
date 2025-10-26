@@ -29,7 +29,7 @@ interface EditReservationDialogProps {
 function calculateValidDurations(startTime: Date): { value: string; label: string }[] {
   const options: { value: string; label: string }[] = [];
   const closingTime = new Date(startTime);
-  closingTime.setHours(22, 0, 0, 0);
+  closingTime.setUTCHours(22, 0, 0, 0);
 
   // Generate options from 30 minutes to 3 hours in 15-minute increments
   for (let minutes = 30; minutes <= 180; minutes += 15) {

@@ -18,8 +18,8 @@ interface DateSelectorProps {
  */
 function formatDateLabel(date: Date): string {
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const dayName = dayNames[date.getDay()];
-  const dayNumber = date.getDate();
+  const dayName = dayNames[date.getUTCDay()];
+  const dayNumber = date.getUTCDate();
   return `${dayName} ${dayNumber}`;
 }
 
@@ -28,9 +28,9 @@ function formatDateLabel(date: Date): string {
  */
 function isSameDay(date1: Date, date2: Date): boolean {
   return (
-    date1.getFullYear() === date2.getFullYear() &&
-    date1.getMonth() === date2.getMonth() &&
-    date1.getDate() === date2.getDate()
+    date1.getUTCFullYear() === date2.getUTCFullYear() &&
+    date1.getUTCMonth() === date2.getUTCMonth() &&
+    date1.getUTCDate() === date2.getUTCDate()
   );
 }
 
@@ -40,11 +40,11 @@ function isSameDay(date1: Date, date2: Date): boolean {
 function getNext7Days(): Date[] {
   const days: Date[] = [];
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setUTCHours(0, 0, 0, 0);
 
   for (let i = 0; i < 7; i++) {
     const date = new Date(today);
-    date.setDate(today.getDate() + i);
+    date.setDate(today.getUTCDate() + i);
     days.push(date);
   }
 
@@ -55,8 +55,13 @@ export default function DateSelector({ selectedDate, onDateSelect }: DateSelecto
   const days = getNext7Days();
 
   return (
-    <div className="flex flex-wrap gap-2" role="group" aria-label="Select date to view schedule">
-      {days.map((date) => {
+    <div
+      className="flex flex-wrap gap-2"
+      role="group"
+      aria-label="Select date to view schedule"
+      data-testid="date-selector"
+    >
+      {days.map((date, index) => {
         const isSelected = isSameDay(date, selectedDate);
         const label = formatDateLabel(date);
         const fullDate = date.toLocaleDateString("en-GB", {
@@ -74,6 +79,7 @@ export default function DateSelector({ selectedDate, onDateSelect }: DateSelecto
             aria-pressed={isSelected}
             aria-label={`View schedule for ${fullDate}`}
             className="min-w-[80px]"
+            data-testid={`date-button-${index}`}
           >
             {label}
           </Button>

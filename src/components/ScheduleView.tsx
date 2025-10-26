@@ -31,7 +31,7 @@ export default function ScheduleView({
   }
 
   return (
-    <div className="space-y-2" role="list" aria-label="Daily schedule timeline">
+    <div className="space-y-2" role="list" aria-label="Daily schedule timeline" data-testid="schedule-view">
       {timeSlots.map((timeSlot, index) => (
         <div key={`${timeSlot.startTime.toISOString()}-${index}`} role="listitem">
           <TimeSlot
@@ -39,6 +39,7 @@ export default function ScheduleView({
             userRole={userRole}
             onSelect={() => onTimeSlotSelect(timeSlot.startTime)}
             onCancel={onCancelReservation}
+            index={index}
           />
         </div>
       ))}
