@@ -1,0 +1,135 @@
+name: Pull Request CI
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  lint:
+    name: Lint code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint
+
+  unit-test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run unit tests with coverage
+        run: npm run test:unit:coverage
+
+      - name: Upload unit test coverage
+        uses: actions/upload-artifact@v5
+        with:
+          name: unit-coverage
+          path: coverage/
+          retention-days: 5
+
+  e2e-test:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    needs: lint
+    environment: integration
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Create .env.test file
+        run: |
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env.test
+          echo "SUPABASE_KEY=${{ secrets.SUPABASE_KEY }}" >> .env.test
+          echo "E2E_USERNAME_ID=${{ secrets.E2E_USERNAME_ID }}" >> .env.test
+          echo "E2E_USERNAME=${{ secrets.E2E_USERNAME }}" >> .env.test
+          echo "E2E_PASSWORD=${{ secrets.E2E_PASSWORD }}" >> .env.test
+
+      - name: Run E2E tests with coverage
+        run: npm run test:e2e
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v5
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 5
+
+  status-comment:
+    name: Create status comment
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test, e2e-test]
+    if: always() && (needs.lint.result == 'success' && needs.unit-test.result == 'success' && needs.e2e-test.result == 'success')
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Download unit test coverage
+        uses: actions/download-artifact@v6
+        with:
+          name: unit-coverage
+          path: unit-coverage/
+
+      - name: Download e2e test results
+        uses: actions/download-artifact@v6
+        with:
+          name: playwright-report
+          path: playwright-report/
+
+      - name: Comment on PR
+        uses: actions/github-script@v8
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ✅ All Checks Passed
+
+            🎉 **Pull request is ready for review!**
+
+            ### Test Results:
+            - ✅ **Linting**: All code style checks passed
+            - ✅ **Unit Tests**: All unit tests completed successfully
+            - ✅ **E2E Tests**: All end-to-end tests completed successfully
+
+            ### 📊 Test Artifacts
+            The following test artifacts have been attached to this workflow run:
+            - **Unit Test Coverage**: HTML coverage report (download: \`unit-coverage\` artifact)
+            - **E2E Test Report**: Playwright test report (download: \`playwright-report\` artifact)`
+            });
