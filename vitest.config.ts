@@ -9,6 +9,11 @@ export default getViteConfig(
       globals: true,
       setupFiles: "./src/lib/test/setup.ts",
       exclude: [...configDefaults.exclude, "**/e2e/**"],
+      coverage: {
+        provider: "v8",
+        reporter: ["html"],
+        exclude: ["**/node_modules/**", "**/dist/**"],
+      },
     },
   })
 );
