@@ -1,7 +1,8 @@
 import featureFlags, { type Feature, type Environment } from "./config";
+import { PUBLIC_ENV_NAME } from "astro:env/server";
 
 export const isFeatureEnabled = (feature: Feature): boolean => {
-  const environment = import.meta.env.PUBLIC_ENV_NAME;
+  const environment = PUBLIC_ENV_NAME;
 
   if (!environment) {
     return false;
