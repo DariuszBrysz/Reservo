@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import type { FacilityListDTO, ErrorResponse } from "../../../types";
 import { getAllFacilities } from "../../../lib/services/facilities.service";
+import { isFeatureEnabled } from "../../../features";
 
 export const prerender = false;
 
@@ -13,6 +14,19 @@ export const prerender = false;
  */
 export const GET: APIRoute = async ({ locals }) => {
   const supabase = locals.supabase;
+
+  // Guard: Check if facilities feature is enabled
+  if (!isFeatureEnabled("facilities")) {
+    const errorResponse: ErrorResponse = {
+      error: "Not Found",
+      message: "Feature not available",
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   // Guard: Check authentication
   const {

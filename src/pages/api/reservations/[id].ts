@@ -10,6 +10,7 @@ import {
   ForbiddenError,
   ConflictError,
 } from "../../../lib/services/reservations.service";
+import { isFeatureEnabled } from "../../../features";
 
 export const prerender = false;
 
@@ -36,6 +37,19 @@ const reservationIdSchema = z.coerce.number().int().positive({
  */
 export const GET: APIRoute = async ({ params, locals }) => {
   const supabase = locals.supabase;
+
+  // Guard: Check if reservations feature is enabled
+  if (!isFeatureEnabled("reservations")) {
+    const errorResponse: ErrorResponse = {
+      error: "Not Found",
+      message: "Feature not available",
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   // Guard: Check authentication
   const {
@@ -125,6 +139,19 @@ export const GET: APIRoute = async ({ params, locals }) => {
  */
 export const PATCH: APIRoute = async ({ params, request, locals }) => {
   const supabase = locals.supabase;
+
+  // Guard: Check if reservations feature is enabled
+  if (!isFeatureEnabled("reservations")) {
+    const errorResponse: ErrorResponse = {
+      error: "Not Found",
+      message: "Feature not available",
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   // Guard: Check authentication
   const {
@@ -291,6 +318,19 @@ export const PATCH: APIRoute = async ({ params, request, locals }) => {
  */
 export const DELETE: APIRoute = async ({ params, locals }) => {
   const supabase = locals.supabase;
+
+  // Guard: Check if reservations feature is enabled
+  if (!isFeatureEnabled("reservations")) {
+    const errorResponse: ErrorResponse = {
+      error: "Not Found",
+      message: "Feature not available",
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   // Guard: Check authentication
   const {

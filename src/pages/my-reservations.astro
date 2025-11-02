@@ -8,6 +8,12 @@
 
 import Layout from "../layouts/Layout.astro";
 import MyReservationsView from "../components/views/MyReservationsView";
+import { isFeatureEnabled } from "../features";
+
+// Check if reservations feature is enabled
+if (!isFeatureEnabled("reservations")) {
+  return Astro.redirect("/404");
+}
 
 export const prerender = false;
 ---

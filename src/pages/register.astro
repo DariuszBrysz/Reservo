@@ -5,6 +5,12 @@
  * Provides the user interface for new user registration.
  * If a user with an active session visits this page, they will be redirected to the homepage.
  */
+import { isFeatureEnabled } from "../features";
+
+if (!isFeatureEnabled("auth")) {
+  return Astro.redirect("/404");
+}
+
 import Layout from "../layouts/Layout.astro";
 import { RegisterForm } from "../components/auth/RegisterForm";
 
