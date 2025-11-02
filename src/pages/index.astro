@@ -1,6 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import { FacilityListView } from "../components/views/FacilityListView";
+import { isFeatureEnabled } from "../features";
+
+// Check if facilities feature is enabled
+if (!isFeatureEnabled("facilities")) {
+  return Astro.redirect("/404");
+}
 ---
 
 <Layout>

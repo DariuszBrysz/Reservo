@@ -2,6 +2,7 @@ import { defineMiddleware } from "astro:middleware";
 import { createSupabaseServerInstance } from "../db/supabase.client";
 import { jwtDecode } from "jwt-decode";
 import type { JwtPayload } from "@supabase/supabase-js";
+import { isFeatureEnabled } from "../features";
 
 /**
  * Public paths that don't require authentication
@@ -12,6 +13,8 @@ const PUBLIC_PATHS = [
   "/login",
   "/register",
   "/forgot-password",
+  // Error pages
+  "/404",
   // Auth API endpoints
   "/api/auth/login",
   "/api/auth/register",
@@ -69,8 +72,13 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, url, request
     locals.user = null;
   }
 
-  // If accessing a protected route without authentication, redirect to login
+  // If accessing a protected route without authentication
   if (!isPublicPath && !user) {
+    // If auth feature is disabled, redirect to 404 page
+    if (!isFeatureEnabled("auth")) {
+      return redirect("/404");
+    }
+    // Otherwise, redirect to login
     return redirect("/login");
   }
 

@@ -1,6 +1,12 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import FacilityScheduleView from "../../components/views/FacilityScheduleView";
+import { isFeatureEnabled } from "../../features";
+
+// Check if facilities feature is enabled
+if (!isFeatureEnabled("facilities")) {
+  return Astro.redirect("/404");
+}
 
 // Extract the facility ID from the URL parameters
 const { id } = Astro.params;

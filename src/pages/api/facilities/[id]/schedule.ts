@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import type { ErrorResponse, FacilityScheduleDTO } from "../../../../types";
 import { getFacilitySchedule } from "../../../../lib/services/facilities.service";
+import { isFeatureEnabled } from "../../../../features";
 import { z } from "astro/zod";
 
 export const prerender = false;
@@ -31,6 +32,19 @@ const queryParamsSchema = z.object({
  */
 export const GET: APIRoute = async ({ params, url, locals }) => {
   const supabase = locals.supabase;
+
+  // Guard: Check if facilities feature is enabled
+  if (!isFeatureEnabled("facilities")) {
+    const errorResponse: ErrorResponse = {
+      error: "Not Found",
+      message: "Feature not available",
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   // Guard: Validate path parameters
   const pathValidationResult = pathParamsSchema.safeParse(params);

@@ -3,6 +3,7 @@ import { z } from "astro/zod";
 import type { ErrorResponse } from "../../../../types";
 import { findReservationForExport, NotFoundError, ForbiddenError } from "../../../../lib/services/reservations.service";
 import { generateIcsContent } from "../../../../lib/utils";
+import { isFeatureEnabled } from "../../../../features";
 
 export const prerender = false;
 
@@ -23,6 +24,7 @@ const reservationIdSchema = z.coerce.number().int().positive({
  *
  * Returns: iCalendar (.ics) file with appropriate headers
  *
+ * Feature Flag: reservations
  * Authorization:
  *   - Regular users can only export their own reservations
  *   - Admin users with "reservations.view_all" permission can export any reservation
@@ -33,6 +35,19 @@ const reservationIdSchema = z.coerce.number().int().positive({
  */
 export const GET: APIRoute = async ({ params, locals }) => {
   const supabase = locals.supabase;
+
+  // Guard: Check if reservations export feature is enabled
+  if (!isFeatureEnabled("reservations")) {
+    const errorResponse: ErrorResponse = {
+      error: "Not Found",
+      message: "Feature not available",
+    };
+
+    return new Response(JSON.stringify(errorResponse), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   // Guard: Check authentication
   const {

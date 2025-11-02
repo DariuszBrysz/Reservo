@@ -8,10 +8,21 @@
 import type { APIRoute } from "astro";
 import { createSupabaseServerInstance } from "../../../db/supabase.client";
 import { updatePasswordSchema } from "../../../lib/validators/auth";
+import { isFeatureEnabled } from "../../../features";
 
 export const prerender = false;
 
 export const POST: APIRoute = async ({ request, cookies }) => {
+  // Guard: Check if auth feature is enabled
+  if (!isFeatureEnabled("auth")) {
+    return new Response(
+      JSON.stringify({
+        error: "Authentication feature is currently unavailable.",
+      }),
+      { status: 404, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
   try {
     // Parse and validate request body
     const body = await request.json();
