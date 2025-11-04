@@ -1,7 +1,5 @@
 import { defineMiddleware } from "astro:middleware";
 import { createSupabaseServerInstance } from "../db/supabase.client";
-import { jwtDecode } from "jwt-decode";
-import type { JwtPayload } from "@supabase/supabase-js";
 import { isFeatureEnabled } from "../features";
 
 /**
@@ -47,33 +45,23 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, url, request
   // Check if current path is public
   const isPublicPath = PUBLIC_PATHS.some((path) => url.pathname === path || url.pathname.startsWith("/api/"));
 
-  // Get user session from Supabase
-  // This is CRITICAL - always call getUser() to validate the session
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Get JWT claims from Supabase to validate session and extract user data
+  const { data: jwtData, error: claimsError } = await supabase.auth.getClaims();
 
-  // If user is authenticated, populate locals.user
-  if (user) {
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session) {
-        // Extract role from JWT claims (set by custom_access_token_hook)
-        // The custom_access_token_hook adds 'user_role' to the JWT claims
-        const jwt: JwtPayload = jwtDecode(session.access_token);
-        const userRole = jwt.user_role;
-        locals.user = {
-          id: user.id,
-          email: user.email || "",
-          role: userRole || "user",
-        };
-      }
-    });
+  // If claims are present, extract user data from them
+  if (jwtData?.claims && !claimsError) {
+    const userRole = (jwtData.claims.user_role as string) || "user";
+    locals.user = {
+      id: jwtData.claims.sub || "",
+      email: jwtData.claims.email || "",
+      role: userRole,
+    };
   } else {
     locals.user = null;
   }
 
   // If accessing a protected route without authentication
-  if (!isPublicPath && !user) {
+  if (!isPublicPath && (!jwtData?.claims || claimsError)) {
     // If auth feature is disabled, redirect to 404 page
     if (!isFeatureEnabled("auth")) {
       return redirect("/404");
@@ -83,7 +71,11 @@ export const onRequest = defineMiddleware(async ({ locals, cookies, url, request
   }
 
   // If accessing login or register page while already authenticated, redirect to home
-  if ((url.pathname === "/login" || url.pathname === "/register" || url.pathname === "/forgot-password") && user) {
+  if (
+    (url.pathname === "/login" || url.pathname === "/register" || url.pathname === "/forgot-password") &&
+    jwtData?.claims &&
+    !claimsError
+  ) {
     return redirect("/");
   }
 
