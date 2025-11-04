@@ -107,7 +107,7 @@ function formatDateToISO(date: Date): string {
 /**
  * Main hook for facility schedule management
  */
-export function useFacilitySchedule(facilityId: number): UseFacilityScheduleReturn {
+export function useFacilitySchedule(facilityId: number, userRole: AppRole): UseFacilityScheduleReturn {
   // Core state
   const [selectedDate, setSelectedDate] = useState<Date>(() => {
     const today = new Date();
@@ -118,7 +118,6 @@ export function useFacilitySchedule(facilityId: number): UseFacilityScheduleRetu
   const [schedule, setSchedule] = useState<FacilityScheduleViewModel | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
-  const [userRole, setUserRole] = useState<AppRole>("user");
 
   // Dialog states
   const [bookingState, setBookingState] = useState<BookingState>({
@@ -156,29 +155,10 @@ export function useFacilitySchedule(facilityId: number): UseFacilityScheduleRetu
     }
   }, [facilityId, selectedDate]);
 
-  /**
-   * Fetches the current user's role
-   * TODO: Replace with actual authentication check
-   */
-  const fetchUserRole = useCallback(async () => {
-    try {
-      // Placeholder: In a real implementation, this would fetch from auth state
-      // For now, defaulting to 'user'
-      setUserRole("user");
-    } catch {
-      setUserRole("user");
-    }
-  }, []);
-
   // Fetch schedule when component mounts or dependencies change
   useEffect(() => {
     fetchSchedule();
   }, [fetchSchedule]);
-
-  // Fetch user role on mount
-  useEffect(() => {
-    fetchUserRole();
-  }, [fetchUserRole]);
 
   /**
    * Opens the booking dialog with the specified start time

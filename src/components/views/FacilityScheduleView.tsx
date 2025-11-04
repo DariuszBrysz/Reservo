@@ -8,6 +8,7 @@
 
 import { toast } from "sonner";
 import { useFacilitySchedule } from "../hooks/useFacilitySchedule";
+import type { AppRole } from "../../types";
 import { Skeleton } from "../ui/skeleton";
 import DateSelector from "../DateSelector";
 import ScheduleView from "../ScheduleView";
@@ -16,14 +17,14 @@ import CancelReservationDialog from "../CancelReservationDialog";
 
 interface FacilityScheduleViewProps {
   facilityId: number;
+  userRole: AppRole;
 }
 
-export default function FacilityScheduleView({ facilityId }: FacilityScheduleViewProps) {
+export default function FacilityScheduleView({ facilityId, userRole }: FacilityScheduleViewProps) {
   const {
     schedule,
     isLoading,
     error,
-    userRole,
     selectedDate,
     setSelectedDate,
     bookingState,
@@ -33,7 +34,7 @@ export default function FacilityScheduleView({ facilityId }: FacilityScheduleVie
     createReservation,
     cancelReservation,
     closeDialogs,
-  } = useFacilitySchedule(facilityId);
+  } = useFacilitySchedule(facilityId, userRole);
 
   // Handle booking confirmation with error handling
   const handleBookingConfirm = async (command: Parameters<typeof createReservation>[0]) => {

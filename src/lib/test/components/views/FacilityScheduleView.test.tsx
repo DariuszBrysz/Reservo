@@ -118,7 +118,7 @@ describe("FacilityScheduleView", () => {
         isLoading: true,
       });
 
-      const { container } = render(<FacilityScheduleView facilityId={facilityId} />);
+      const { container } = render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const skeletons = container.querySelectorAll(".animate-pulse");
       expect(skeletons.length).toBeGreaterThan(0);
@@ -131,7 +131,7 @@ describe("FacilityScheduleView", () => {
         isLoading: true,
       });
 
-      const { container } = render(<FacilityScheduleView facilityId={facilityId} />);
+      const { container } = render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const nameSkeleton = container.querySelector(".h-10");
       expect(nameSkeleton).toBeInTheDocument();
@@ -144,7 +144,7 @@ describe("FacilityScheduleView", () => {
         isLoading: true,
       });
 
-      const { container } = render(<FacilityScheduleView facilityId={facilityId} />);
+      const { container } = render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const scheduleSkeleton = container.querySelector(".h-96");
       expect(scheduleSkeleton).toBeInTheDocument();
@@ -156,7 +156,7 @@ describe("FacilityScheduleView", () => {
         isLoading: true,
       });
 
-      const { container } = render(<FacilityScheduleView facilityId={facilityId} />);
+      const { container } = render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       // Should still show facility name
       expect(screen.getByText("Basketball Court")).toBeInTheDocument();
@@ -176,7 +176,7 @@ describe("FacilityScheduleView", () => {
         error: new Error("Failed to load schedule"),
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       expect(screen.getByText(/failed to load schedule/i)).toBeInTheDocument();
       expect(screen.getByText(/an unexpected error occurred/i)).toBeInTheDocument();
@@ -190,7 +190,7 @@ describe("FacilityScheduleView", () => {
         error: new Error("Network error"),
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       expect(screen.queryByRole("list")).not.toBeInTheDocument();
     });
@@ -203,7 +203,7 @@ describe("FacilityScheduleView", () => {
         error: new Error("Failed to load"),
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const errorHeading = screen.getByRole("heading", { name: /failed to load schedule/i });
       expect(errorHeading).toHaveClass("text-destructive");
@@ -212,7 +212,7 @@ describe("FacilityScheduleView", () => {
 
   describe("Success State - FAC-002 & FAC-003", () => {
     it("should display facility name as heading", () => {
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const heading = screen.getByRole("heading", { name: "Basketball Court" });
       expect(heading).toBeInTheDocument();
@@ -220,21 +220,21 @@ describe("FacilityScheduleView", () => {
     });
 
     it("should display date selector", () => {
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const dateSelector = screen.getByRole("group", { name: /select date to view schedule/i });
       expect(dateSelector).toBeInTheDocument();
     });
 
     it("should display schedule view with time slots", () => {
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const scheduleList = screen.getByRole("list", { name: /daily schedule timeline/i });
       expect(scheduleList).toBeInTheDocument();
     });
 
     it("should display both available and booked time slots", () => {
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       // Available slot
       expect(screen.getByLabelText(/book time slot from 14:00/i)).toBeInTheDocument();
@@ -244,7 +244,7 @@ describe("FacilityScheduleView", () => {
     });
 
     it("should use semantic HTML structure", () => {
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const header = screen.getByRole("banner");
       expect(header).toBeInTheDocument();
@@ -254,7 +254,7 @@ describe("FacilityScheduleView", () => {
     });
 
     it("should have accessible section labels", () => {
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       expect(screen.getByLabelText(/date selection/i)).toBeInTheDocument();
 
@@ -274,7 +274,7 @@ describe("FacilityScheduleView", () => {
         selectedDate,
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       // DateSelector should highlight the selected date (first button)
       const buttons = screen.getAllByRole("button");
@@ -290,7 +290,7 @@ describe("FacilityScheduleView", () => {
         setSelectedDate,
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       // Find a button that's not currently selected (not the first one which is today)
       const buttons = screen.getAllByRole("button", { name: /^View schedule for/ });
@@ -308,7 +308,7 @@ describe("FacilityScheduleView", () => {
 
   describe("Booking Dialog Management", () => {
     it("should not display booking dialog initially", () => {
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
@@ -322,7 +322,7 @@ describe("FacilityScheduleView", () => {
         },
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       expect(screen.getByRole("dialog")).toBeInTheDocument();
     });
@@ -336,7 +336,7 @@ describe("FacilityScheduleView", () => {
         openBookingDialog,
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const availableSlot = screen.getByLabelText(/book time slot from 14:00/i);
       await user.click(availableSlot);
@@ -352,7 +352,7 @@ describe("FacilityScheduleView", () => {
         bookingState: { isOpen: true, startTime },
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       // Dialog should be visible
       expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -367,7 +367,7 @@ describe("FacilityScheduleView", () => {
         cancelState: { isOpen: true, reservationId: 1 },
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       expect(screen.getByRole("alertdialog")).toBeInTheDocument();
     });
@@ -382,7 +382,7 @@ describe("FacilityScheduleView", () => {
         openCancelDialog,
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="admin" />);
 
       const cancelButton = screen.getByRole("button", { name: /cancel reservation/i });
       await user.click(cancelButton);
@@ -400,7 +400,7 @@ describe("FacilityScheduleView", () => {
         createReservation,
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const command = {
         facility_id: facilityId,
@@ -420,7 +420,7 @@ describe("FacilityScheduleView", () => {
     it("should handle successful reservation creation through component", () => {
       // Test that the component renders and can handle reservation creation
       // The actual toast behavior is tested through integration tests
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
       expect(screen.getByText("Basketball Court")).toBeInTheDocument();
     });
   });
@@ -433,7 +433,7 @@ describe("FacilityScheduleView", () => {
         cancelReservation,
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const command = {
         status: "canceled" as const,
@@ -446,7 +446,7 @@ describe("FacilityScheduleView", () => {
     it("should handle successful reservation cancellation through component", () => {
       // Test that the component renders and can handle reservation cancellation
       // The actual toast behavior is tested through integration tests
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
       expect(screen.getByText("Basketball Court")).toBeInTheDocument();
     });
   });
@@ -460,7 +460,7 @@ describe("FacilityScheduleView", () => {
         bookingState: { isOpen: true, startTime: new Date() },
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       // The BookingDialog should call onCancel which maps to closeDialogs
       // We test that the prop is correctly passed
@@ -475,7 +475,7 @@ describe("FacilityScheduleView", () => {
         cancelState: { isOpen: true, reservationId: 1 },
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       expect(closeDialogs).toBeDefined();
     });
@@ -488,7 +488,7 @@ describe("FacilityScheduleView", () => {
         userRole: "admin",
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="admin" />);
 
       // Admin should see cancel buttons
       expect(screen.getByRole("button", { name: /cancel reservation/i })).toBeInTheDocument();
@@ -500,7 +500,7 @@ describe("FacilityScheduleView", () => {
         userRole: "user",
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       // Regular users should not see cancel buttons
       expect(screen.queryByRole("button", { name: /cancel reservation/i })).not.toBeInTheDocument();
@@ -509,7 +509,7 @@ describe("FacilityScheduleView", () => {
 
   describe("Layout and Styling", () => {
     it("should use consistent container styling", () => {
-      const { container } = render(<FacilityScheduleView facilityId={facilityId} />);
+      const { container } = render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const mainContainer = container.querySelector(".container");
       expect(mainContainer).toBeInTheDocument();
@@ -519,14 +519,14 @@ describe("FacilityScheduleView", () => {
     });
 
     it("should have proper spacing between sections", () => {
-      const { container } = render(<FacilityScheduleView facilityId={facilityId} />);
+      const { container } = render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const spacedContainer = container.querySelector(".space-y-6");
       expect(spacedContainer).toBeInTheDocument();
     });
 
     it("should use max-width container", () => {
-      const { container } = render(<FacilityScheduleView facilityId={facilityId} />);
+      const { container } = render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       const maxWidthContainer = container.querySelector(".max-w-5xl");
       expect(maxWidthContainer).toBeInTheDocument();
@@ -534,10 +534,10 @@ describe("FacilityScheduleView", () => {
   });
 
   describe("Integration with Hook", () => {
-    it("should call useFacilitySchedule with correct facilityId", () => {
-      render(<FacilityScheduleView facilityId={42} />);
+    it("should call useFacilitySchedule with correct facilityId and userRole", () => {
+      render(<FacilityScheduleView facilityId={42} userRole="user" />);
 
-      expect(mockUseFacilitySchedule).toHaveBeenCalledWith(42);
+      expect(mockUseFacilitySchedule).toHaveBeenCalledWith(42, "user");
     });
 
     it("should use all hook return values", () => {
@@ -549,7 +549,7 @@ describe("FacilityScheduleView", () => {
 
       mockUseFacilitySchedule.mockReturnValue(customHookReturn);
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       // Verify it uses the hook's data
       expect(screen.getByText("Basketball Court")).toBeInTheDocument();
@@ -565,7 +565,7 @@ describe("FacilityScheduleView", () => {
         error: null,
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       expect(screen.getByText(/no schedule data available/i)).toBeInTheDocument();
     });
@@ -579,7 +579,7 @@ describe("FacilityScheduleView", () => {
         },
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       expect(screen.getByText(/no time slots available for this date/i)).toBeInTheDocument();
     });
@@ -596,7 +596,7 @@ describe("FacilityScheduleView", () => {
         },
       });
 
-      render(<FacilityScheduleView facilityId={facilityId} />);
+      render(<FacilityScheduleView facilityId={facilityId} userRole="user" />);
 
       expect(
         screen.getByText("Super Ultra Mega Awesome Basketball and Volleyball Multi-Purpose Sports Facility")
