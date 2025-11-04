@@ -21,8 +21,12 @@ if (!facilityId || isNaN(facilityId)) {
 
 // Disable prerendering for this dynamic route
 export const prerender = false;
+
+// Extract user role from middleware
+const user = Astro.locals.user;
+const userRole = (user?.role as "user" | "admin") || "user";
 ---
 
 <Layout title="Facility Schedule - Reservo">
-  <FacilityScheduleView client:load facilityId={facilityId} />
+  <FacilityScheduleView client:load facilityId={facilityId} userRole={userRole} />
 </Layout>

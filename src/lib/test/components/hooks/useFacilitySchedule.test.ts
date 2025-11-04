@@ -110,7 +110,7 @@ describe("useFacilitySchedule", () => {
           })
       );
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       expect(result.current.isLoading).toBe(true);
       expect(result.current.schedule).toBeNull();
@@ -132,7 +132,7 @@ describe("useFacilitySchedule", () => {
           })
       );
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       expect(result.current.selectedDate).toEqual(getToday());
     });
@@ -145,25 +145,12 @@ describe("useFacilitySchedule", () => {
           })
       );
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       expect(result.current.bookingState.isOpen).toBe(false);
       expect(result.current.bookingState.startTime).toBeNull();
       expect(result.current.cancelState.isOpen).toBe(false);
       expect(result.current.cancelState.reservationId).toBeNull();
-    });
-
-    it("should initialize with user role", () => {
-      mockFetch.mockImplementation(
-        () =>
-          new Promise(() => {
-            // Intentionally empty - promise never resolves to test loading state
-          })
-      );
-
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
-
-      expect(result.current.userRole).toBe("user");
     });
   });
 
@@ -174,7 +161,7 @@ describe("useFacilitySchedule", () => {
         json: async () => mockScheduleData,
       });
 
-      renderHook(() => useFacilitySchedule(facilityId));
+      renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         const expectedDate = getTodayISOString();
@@ -185,7 +172,7 @@ describe("useFacilitySchedule", () => {
     it("should transform schedule data correctly", async () => {
       setupSuccessfulScheduleFetch();
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitForScheduleLoad(result);
 
@@ -213,7 +200,7 @@ describe("useFacilitySchedule", () => {
         }),
       });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.schedule?.timeSlots).toHaveLength(32);
@@ -232,7 +219,7 @@ describe("useFacilitySchedule", () => {
         json: async () => mockScheduleData,
       });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.schedule).toBeDefined();
@@ -260,7 +247,7 @@ describe("useFacilitySchedule", () => {
         }),
       });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.schedule).toBeDefined();
@@ -277,7 +264,7 @@ describe("useFacilitySchedule", () => {
         statusText: "Not Found",
       });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -290,7 +277,7 @@ describe("useFacilitySchedule", () => {
     it("should handle network errors", async () => {
       mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -302,7 +289,7 @@ describe("useFacilitySchedule", () => {
     it("should handle non-Error exceptions", async () => {
       mockFetch.mockRejectedValueOnce("String error");
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.error?.message).toBe("Unknown error");
@@ -325,7 +312,7 @@ describe("useFacilitySchedule", () => {
           }),
         });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -353,7 +340,7 @@ describe("useFacilitySchedule", () => {
         json: async () => mockScheduleData,
       });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -366,6 +353,11 @@ describe("useFacilitySchedule", () => {
         result.current.setSelectedDate(newDate);
       });
 
+      // Wait for the re-fetch triggered by date change to complete
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
       expect(result.current.selectedDate).toEqual(newDate);
     });
   });
@@ -374,7 +366,7 @@ describe("useFacilitySchedule", () => {
     it("should open booking dialog with start time", async () => {
       setupSuccessfulScheduleFetch();
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitForScheduleLoad(result);
 
@@ -394,7 +386,7 @@ describe("useFacilitySchedule", () => {
         json: async () => mockScheduleData,
       });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -424,7 +416,7 @@ describe("useFacilitySchedule", () => {
         json: async () => mockScheduleData,
       });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -444,7 +436,7 @@ describe("useFacilitySchedule", () => {
         json: async () => mockScheduleData,
       });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -472,7 +464,7 @@ describe("useFacilitySchedule", () => {
         json: async () => mockScheduleData,
       });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -506,7 +498,7 @@ describe("useFacilitySchedule", () => {
         json: async () => mockScheduleData,
       });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitForScheduleLoad(result);
 
@@ -548,7 +540,7 @@ describe("useFacilitySchedule", () => {
           json: async () => mockScheduleData,
         });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -587,7 +579,7 @@ describe("useFacilitySchedule", () => {
           json: async () => mockScheduleData,
         });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -618,7 +610,7 @@ describe("useFacilitySchedule", () => {
           status: 409,
         });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -648,7 +640,7 @@ describe("useFacilitySchedule", () => {
           statusText: "Bad Request",
         });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -684,7 +676,7 @@ describe("useFacilitySchedule", () => {
           json: async () => mockScheduleData,
         });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -735,7 +727,7 @@ describe("useFacilitySchedule", () => {
           json: async () => mockScheduleData,
         });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -767,7 +759,7 @@ describe("useFacilitySchedule", () => {
           json: async () => mockScheduleData,
         });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -790,7 +782,7 @@ describe("useFacilitySchedule", () => {
         json: async () => mockScheduleData,
       });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -816,7 +808,7 @@ describe("useFacilitySchedule", () => {
           statusText: "Forbidden",
         });
 
-      const { result } = renderHook(() => useFacilitySchedule(facilityId));
+      const { result } = renderHook(() => useFacilitySchedule(facilityId, "user"));
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
