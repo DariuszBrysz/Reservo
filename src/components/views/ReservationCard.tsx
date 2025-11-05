@@ -91,7 +91,7 @@ export default function ReservationCard({ reservation, onEdit, onCancel, onExpor
         {reservation.cancellationMessage && (
           <>
             <Separator />
-            <div className="rounded-md bg-muted/50 p-3">
+            <div className="rounded-md p-3">
               <p className="text-sm font-medium text-muted-foreground mb-1.5">Cancellation Reason</p>
               <p className="text-sm text-foreground leading-relaxed">{reservation.cancellationMessage}</p>
             </div>
@@ -100,7 +100,7 @@ export default function ReservationCard({ reservation, onEdit, onCancel, onExpor
       </CardContent>
 
       {showActions && (
-        <CardFooter className="flex flex-col sm:flex-row gap-2 bg-muted/30">
+        <CardFooter className="flex flex-col sm:flex-row gap-2">
           <div className="flex gap-2 w-full sm:w-auto">
             {reservation.isEditable && (
               <Button variant="outline" onClick={() => onEdit(reservation)} className="gap-2 flex-1 sm:flex-initial">
@@ -169,7 +169,7 @@ export default function ReservationCard({ reservation, onEdit, onCancel, onExpor
       )}
 
       {!showActions && reservation.status === "Confirmed" && (
-        <CardFooter className="bg-muted/30">
+        <CardFooter>
           <Button
             variant="secondary"
             onClick={() => onExport(reservation.id)}
