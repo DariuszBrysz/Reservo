@@ -24,7 +24,7 @@ export const getReservationsQuerySchema = z.object({
   upcoming: z
     .string()
     .optional()
-    .default("true")
+    .default("false")
     .transform((val) => val === "true"),
   facility_id: z.coerce.number().int().positive().optional(),
   limit: z.coerce.number().int().positive().max(100, "Maximum limit is 100").default(50).optional(),
@@ -49,7 +49,7 @@ export async function getReservations(
   userId: string
 ): Promise<{ data: ReservationListDTO | null; error: Error | null }> {
   try {
-    const { status, upcoming = true, facility_id, limit = 50, offset = 0 } = query;
+    const { status, upcoming, facility_id, limit = 50, offset = 0 } = query;
 
     // Build the base query with facility join
     let queryBuilder = supabase

@@ -97,7 +97,7 @@ describe("useMyReservations", () => {
       expect(result.current.canceledReservations).toEqual([]);
     });
 
-    it("should fetch all three reservation categories in parallel", async () => {
+    it("should fetch all reservation categories in parallel", async () => {
       mockFetch.mockResolvedValue({
         ok: true,
         json: async () => ({ reservations: [] }),
@@ -106,19 +106,18 @@ describe("useMyReservations", () => {
       renderHook(() => useMyReservations());
 
       await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith("/api/reservations?status=confirmed&upcoming=true");
-        expect(mockFetch).toHaveBeenCalledWith("/api/reservations?status=confirmed&upcoming=false");
+        expect(mockFetch).toHaveBeenCalledWith("/api/reservations?status=confirmed");
         expect(mockFetch).toHaveBeenCalledWith("/api/reservations?status=canceled");
-        expect(mockFetch).toHaveBeenCalledTimes(3);
+        expect(mockFetch).toHaveBeenCalledTimes(2);
       });
     });
 
     it("should populate upcoming reservations", async () => {
       mockFetch.mockImplementation((url: string) => {
-        if (url.includes("upcoming=true")) {
+        if (url.includes("status=confirmed")) {
           return Promise.resolve({
             ok: true,
-            json: async () => ({ reservations: [upcomingReservationDTO] }),
+            json: async () => ({ reservations: [upcomingReservationDTO, pastReservationDTO] }),
           });
         }
         return Promise.resolve({
@@ -133,27 +132,6 @@ describe("useMyReservations", () => {
         expect(result.current.isLoading).toBe(false);
         expect(result.current.upcomingReservations).toHaveLength(1);
         expect(result.current.upcomingReservations[0].facilityName).toBe("Basketball Court");
-      });
-    });
-
-    it("should populate past reservations", async () => {
-      mockFetch.mockImplementation((url: string) => {
-        if (url.includes("upcoming=false")) {
-          return Promise.resolve({
-            ok: true,
-            json: async () => ({ reservations: [pastReservationDTO] }),
-          });
-        }
-        return Promise.resolve({
-          ok: true,
-          json: async () => ({ reservations: [] }),
-        });
-      });
-
-      const { result } = renderHook(() => useMyReservations());
-
-      await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
         expect(result.current.pastReservations).toHaveLength(1);
         expect(result.current.pastReservations[0].facilityName).toBe("Tennis Court");
       });
@@ -224,7 +202,7 @@ describe("useMyReservations", () => {
   describe("ViewModel Transformation", () => {
     it("should transform DTO to ViewModel with formatted dates", async () => {
       mockFetch.mockImplementation((url: string) => {
-        if (url.includes("upcoming=true")) {
+        if (url.includes("status=confirmed")) {
           return Promise.resolve({
             ok: true,
             json: async () => ({ reservations: [upcomingReservationDTO] }),
@@ -249,7 +227,7 @@ describe("useMyReservations", () => {
 
     it("should format times in HH:mm format", async () => {
       mockFetch.mockImplementation((url: string) => {
-        if (url.includes("upcoming=true")) {
+        if (url.includes("status=confirmed")) {
           return Promise.resolve({
             ok: true,
             json: async () => ({ reservations: [upcomingReservationDTO] }),
@@ -272,7 +250,7 @@ describe("useMyReservations", () => {
 
     it("should include original start time and duration", async () => {
       mockFetch.mockImplementation((url: string) => {
-        if (url.includes("upcoming=true")) {
+        if (url.includes("status=confirmed")) {
           return Promise.resolve({
             ok: true,
             json: async () => ({ reservations: [upcomingReservationDTO] }),
@@ -323,7 +301,7 @@ describe("useMyReservations", () => {
       };
 
       mockFetch.mockImplementation((url: string) => {
-        if (url.includes("upcoming=true")) {
+        if (url.includes("status=confirmed")) {
           return Promise.resolve({
             ok: true,
             json: async () => ({ reservations: [farFutureReservation] }),
@@ -350,7 +328,7 @@ describe("useMyReservations", () => {
       };
 
       mockFetch.mockImplementation((url: string) => {
-        if (url.includes("upcoming=true")) {
+        if (url.includes("status=confirmed")) {
           return Promise.resolve({
             ok: true,
             json: async () => ({ reservations: [soonReservation] }),
@@ -439,7 +417,6 @@ describe("useMyReservations", () => {
       });
 
       await waitFor(() => {
-        // Should have made 3 more calls (one for each reservation type)
         expect(mockFetch.mock.calls.length).toBeGreaterThan(initialCallCount);
       });
     });
@@ -785,7 +762,7 @@ describe("useMyReservations", () => {
 
     it("should handle partial response errors", async () => {
       mockFetch.mockImplementation((url: string) => {
-        if (url.includes("upcoming=true")) {
+        if (url.includes("status=confirmed")) {
           return Promise.resolve({
             ok: false,
             status: 500,
@@ -826,7 +803,7 @@ describe("useMyReservations", () => {
       const multipleReservations = [upcomingReservationDTO, { ...upcomingReservationDTO, id: 999 }];
 
       mockFetch.mockImplementation((url: string) => {
-        if (url.includes("upcoming=true")) {
+        if (url.includes("status=confirmed")) {
           return Promise.resolve({
             ok: true,
             json: async () => ({ reservations: multipleReservations }),

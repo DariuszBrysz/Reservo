@@ -77,26 +77,33 @@ export function useMyReservations(): UseMyReservationsResult {
       setError(null);
 
       try {
-        // Fetch all three categories in parallel
-        const [upcomingResponse, pastResponse, canceledResponse] = await Promise.all([
-          fetch("/api/reservations?status=confirmed&upcoming=true"),
-          fetch("/api/reservations?status=confirmed&upcoming=false"),
+        // Fetch reservations in parallel (all confirmed + canceled)
+        const [allConfirmedResponse, canceledResponse] = await Promise.all([
+          fetch("/api/reservations?status=confirmed"),
           fetch("/api/reservations?status=canceled"),
         ]);
 
         // Check for errors
-        if (!upcomingResponse.ok || !pastResponse.ok || !canceledResponse.ok) {
+        if (!allConfirmedResponse.ok || !canceledResponse.ok) {
           throw new Error("Failed to fetch reservations");
         }
 
         // Parse responses
-        const upcomingData = await upcomingResponse.json();
-        const pastData = await pastResponse.json();
+        const allConfirmedData = await allConfirmedResponse.json();
         const canceledData = await canceledResponse.json();
 
+        // Split confirmed reservations into upcoming and past based on current time
+        const now = new Date();
+        const upcomingReservationsData = allConfirmedData.reservations.filter((reservation: ReservationDetailDTO) => {
+          return new Date(reservation.start_time) >= now;
+        });
+        const pastReservationsData = allConfirmedData.reservations.filter((reservation: ReservationDetailDTO) => {
+          return new Date(reservation.start_time) < now;
+        });
+
         // Transform to ViewModels
-        setUpcomingReservations(upcomingData.reservations.map(transformToViewModel));
-        setPastReservations(pastData.reservations.map(transformToViewModel));
+        setUpcomingReservations(upcomingReservationsData.map(transformToViewModel));
+        setPastReservations(pastReservationsData.map(transformToViewModel));
         setCanceledReservations(canceledData.reservations.map(transformToViewModel));
       } catch (err) {
         setError(err instanceof Error ? err.message : "An unexpected error occurred");
