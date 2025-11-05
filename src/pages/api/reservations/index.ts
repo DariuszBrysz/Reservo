@@ -20,7 +20,7 @@ export const prerender = false;
  * Query Parameters:
  *   - all (boolean, optional): Retrieve all reservations (admin only). Default: false
  *   - status (string, optional): Filter by status ("confirmed" or "canceled")
- *   - upcoming (boolean, optional): Filter for upcoming reservations. Default: true
+ *   - upcoming (boolean, optional): Filter for upcoming reservations. Default: false
  *   - facility_id (number, optional): Filter by facility ID
  *   - limit (number, optional): Results per page (max 100). Default: 50
  *   - offset (number, optional): Pagination offset. Default: 0
