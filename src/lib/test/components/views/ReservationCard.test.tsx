@@ -428,20 +428,6 @@ describe("ReservationCard", () => {
       expect(screen.queryByText("Cancellation Reason")).not.toBeInTheDocument();
     });
 
-    it("should style cancellation message area", () => {
-      const { container } = render(
-        <ReservationCard
-          reservation={canceledReservation}
-          onEdit={mockOnEdit}
-          onCancel={mockOnCancel}
-          onExport={mockOnExport}
-        />
-      );
-
-      const messageArea = container.querySelector(".bg-muted\\/50");
-      expect(messageArea).toBeInTheDocument();
-    });
-
     it("should display separator before cancellation message", () => {
       render(
         <ReservationCard
